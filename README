@@ -1,0 +1,1 @@
+Cosmonest is an algorithm for calculating the model likelihood (or "Evidence") in a Bayesian framework. It is based on an original concept by John Skilling (http://www/inference.phy.cam./ac.uk/bayesys/).
