@@ -227,11 +227,9 @@ program SolveCosmology
                close(outfile_handle)
             endif
             outfile_handle = IO_OpenChainForRead(fname)
-            print*, outfile_handle
             new_chains = .true. ! don't look at the end of the .txt files for the next place to start
             fname = trim(rootname)//'ev.dat'
             new_live = .not. IO_Exists(fname)
-            print*, new_live
             indepfile_handle = IO_DataOpenForWrite(fname,append=.not. new_live) 
             Ini_fail_on_not_found = .false.
         else 

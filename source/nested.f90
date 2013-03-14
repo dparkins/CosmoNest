@@ -415,7 +415,7 @@ contains
          Trial%Info%LastParams%omb, Trial%Info%LastParams%omc, Trial%Info%LastParams%omv
        l(i) = -GetLogLike(Trial)
        call AcceptReject(accept,CurParams%Info,Trial%Info)
-       if(feedback.ge.1) write(*,*) "Like =", l(i)
+       if(feedback.ge.2) write(*,*) "Like =", l(i)
        if(abs(l(i)).eq.LogZero) then
           l(i)=-LogZero*(1.+0.0001*ranmar())
        end if
