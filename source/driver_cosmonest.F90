@@ -219,18 +219,19 @@ program SolveCosmology
             outfile_handle = 0
             fname = trim(rootname)//'.txt'
             if (new_chains) then
-	       outfile_handle = IO_OutputOpenForWrite(fname, append = .false.)
+               outfile_handle = IO_OutputOpenForWrite(fname, append = .false.)
                write(outfile_handle,'(E16.7)') -logZero 
                write(outfile_handle,'(E16.7)') 1.d0
                write(outfile_handle,'(i8)') 0
                write(outfile_handle,'(l)') .false.
                close(outfile_handle)
             endif
-            outfile_handle = IO_OpenChainForRead(fname)
+            outfile_handle = new_file_unit()
+            open(file=fname,unit=outfile_handle,form='formatted',status='old') 
             new_chains = .true. ! don't look at the end of the .txt files for the next place to start
             fname = trim(rootname)//'ev.dat'
             new_live = .not. IO_Exists(fname)
-            indepfile_handle = IO_DataOpenForWrite(fname,append=.not. new_live) 
+            indepfile_handle = IO_OutputOpenForWrite(fname,append=.not. new_live) 
             Ini_fail_on_not_found = .false.
         else 
          Ini_fail_on_not_found = .false.
