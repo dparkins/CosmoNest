@@ -1,1 +1,41 @@
 Cosmonest is an algorithm for calculating the model likelihood (or "Evidence") in a Bayesian framework. It is based on an original concept by John Skilling (http://www/inference.phy.cam./ac.uk/bayesys/).
+
+Introduction
+
+CosmoNest is an algorithm for cosmological model selection. Given a model, defined by a set of parameters to be varied and their prior ranges, and data, the algorithm computes the evidence (the marginalized likelihood of the model in light of the data). The Bayes factor, which is proportional to the relative evidence of two models, can then be used for model comparison, i.e. to decide whether a model is an adequate description of data, or whether the data require a more complex model.
+
+For convenience, CosmoNest is presented here as an optional add-on to CosmoMC, which is widely used by the cosmological community to perform parameter fitting within a model using a Markov-Chain Monte-Carlo (MCMC) engine. For this reason it can be run very easily by anyone who is able to compile and run CosmoMC. CosmoNest implements a different sampling strategy, geared for computing the evidence very accurately and efficiently. It also provides posteriors for parameter fitting as a by-product.
+
+Downloading, compiling and running
+
+You should have a version of CosmoMC that compiles and runs.
+
+You need to download the module nested.f90 into your "source" directory. This module implements the nested sampling algorithm, and will be used instead of MCMC.f90 when you opt for "action = 3" in the input file params.ini. A modified driver.F90 should also be downloaded and saved in the directory source (this just includes the statements "Use Nested" and "if(action=3) then call Nestsample").
+Having got these files, add nested.o to your Makefile in "source", and run "make". Thereafter run as usual. If the program falls over during its course, for any reason, just restart the run and it will continue from where it left off. Otherwise everything that is applicable to the running of CosmoMC naturally applies.
+
+The algorithm parameters - the number of live points N, the enlargement factor, the tolerance (which determines the accuracy to which of want to compute the evidence), all of which are described in this paper, are specified at the start of nested.f90. In addition there is a normalization factor (fac) which must be set close to the highest log likelihood for the data and model that you are using. The normalization is removed from the final answer, and hence does not affect it, it is simply needed to avoid over/underflow, given that the likelihood varies by many orders of magnitude over the parameter space probed. When using WMAP3, with or without LSS, a fac of 5690 works fine.
+
+Output and Results
+
+Running the code will produce these output files, which keep getting updated throughout the running of the program,
+
+file_root.txt which will contain the N live points at any stage. This file also contains the value of the evidence accumulated to that stage, the prior mass left to sample, the number of likelihood evaluations used to that point, etc. Its structure is specified in nested.f90.
+
+file_root\\ev.dat which will contain the discarded (lowest likelihood) point at each step, together with its likelihood, the prior mass remaining at that stage, the log(tolerance) reached, to be compared with log(tolerance_target), the accumulated evidence, and the evidence contributed by the N-1 remaining points at that stage, and finally the number of likelihood evaluations done so far. Again, its exact stucture is specified in nested.f90. While the txt file above keeps getting replaced, this file gets added to, so that in the end it contains the entire chain of discarded points. An example chain can be found here.
+
+Evidence: In the end the last number written into file_root\\ev.dat will be the final answer for the evidence of the model. Multiple chains can be run to obtain uncertainties.
+
+Posteriors samples: The whole chain of discarded points, and the N-1 points remaining in the end, can also be used to compute posterior constraints. For this, download the simple program pos_samp.f90, which will read in the output files above and output a file that has a structure akin to the MCMC parameter chains. This file can then simply be used in distparams.ini, GetDist can be run on it to produce 1D, 2D or 3D, as required, plots of marginalized posteriors, along with a .margestats file containing the actual parameter constraints. The idea of using cosmonest samples to get to posterior samples is explained in the Appendix of this paper.
+
+Version, updates, help etc.
+
+This is version 1.0 of the code. If you want to be informed about future updates, or you have questions or comments, please email help@cosmonest.org.
+
+July 2006 update: The normalization factor (fac) described above no longer needs to be specified. The code now performs the calculation in logs.
+
+August 2006 update: The method of sampling uniformly from a spheroid has been changed to give much better performance in higher dimensions.
+FAQ
+
+As regards using other than uniform priors, any priors can be used. You just need to be able to sample from it.
+
+The code now works fine in the only-fast-parameters mode, if you at all need to run it in this way. 
